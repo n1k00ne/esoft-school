@@ -1,17 +1,11 @@
 /**
- * Выполняет глубокое копирование объекта с поддержкой:
- * - вложенных объектов и массивов
- * - циклических ссылок (через WeakMap)
- * - специальных типов: Date, Map, Set, RegExp, ArrayBuffer, TypedArray и др.
- * - функций и символов
- * - сохранения прототипа исходного объекта
- *
- * @param {*} source - Исходный объект для копирования
- * @param {WeakMap} cache - WeakMap для отслеживания уже скопированных объектов (предотвращает циклы)
+ * Выполняет глубокое копирование объекта 
+ * @param {*} source -  объект для копирования
+ * @param {WeakMap} cache -  для отслеживания уже скопированных объектов
  * @returns {*} Глубокая копия исходного объекта
  */
 export function deepClone(source, cache = new WeakMap()) {
-  // Примитивные типы, null, undefined возвращаем как есть
+  // возвращаем как есть
   if (source === null || typeof source !== 'object') {
     return source;
   }
@@ -117,7 +111,7 @@ const original = {
       zip: 101000
     }
   },
-  tags: ["cozy", "modern"],
+  tags: ["water", "shwaps"],
   createdAt: new Date("2024-01-01"),
   settings: new Map([["theme", "dark"], ["notifications", true]]),
   uniqueId: Symbol("id")
@@ -132,7 +126,7 @@ copy.createdAt.setFullYear(2025);
 copy.settings.set("theme", "light");
 
 console.log(original.details.rooms);   // 3 — не изменилось
-console.log(original.tags);            // ["cozy", "modern"] — без "spacious"
+console.log(original.tags);            // ["water", "shwaps"] — без "spacious"
 console.log(original.createdAt);       // 2024-01-01 — не изменилось
 console.log(original.settings.get("theme")); // "dark" — не изменилось
 
@@ -143,7 +137,7 @@ circular.self = circular;
 circular.arr = [1, circular, 3];
 
 const circularCopy = deepClone(circular);
-console.log(circularCopy.self === circularCopy); // true (структура сохранена)
+console.log(circularCopy.self === circularCopy); // true
 console.log(circularCopy.arr[1] === circularCopy); // true
 
 
@@ -157,11 +151,11 @@ class Person {
   }
 }
 
-const person = new Person("Alice");
+const person = new Person("Nick");
 const personCopy = deepClone(person);
 
 console.log(personCopy instanceof Person); // true
-console.log(personCopy.greet());           // "Hello, I'm Alice"
+console.log(personCopy.greet());           // "Hello, I'm Nick"
 console.log(personCopy.constructor === Person); // true
 
 
@@ -176,4 +170,4 @@ const withFunctions = {
 const funcCopy = deepClone(withFunctions);
 console.log(typeof funcCopy.sayHi);        // "function"
 console.log(funcCopy.sayHi());             // "Hi"
-console.log(Object.getOwnPropertySymbols(funcCopy).length); // 2 (символы скопированы)
+console.log(Object.getOwnPropertySymbols(funcCopy).length); // 2
