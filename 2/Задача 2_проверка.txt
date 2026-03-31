@@ -1,0 +1,68 @@
+// 1. Простой объект с вложенными структурами
+const original = {
+  name: "Home",
+  details: {
+    rooms: 3,
+    address: {
+      city: "Moscow",
+      zip: 101000
+    }
+  },
+  tags: ["cozy", "modern"],
+  createdAt: new Date("2024-01-01"),
+  settings: new Map([["theme", "dark"], ["notifications", true]]),
+  uniqueId: Symbol("id")
+};
+
+const copy = deepClone(original);
+
+// Проверка независимости
+copy.details.rooms = 5;
+copy.tags.push("spacious");
+copy.createdAt.setFullYear(2025);
+copy.settings.set("theme", "light");
+
+console.log(original.details.rooms);   // 3 — не изменилось
+console.log(original.tags);            // ["cozy", "modern"] — без "spacious"
+console.log(original.createdAt);       // 2024-01-01 — не изменилось
+console.log(original.settings.get("theme")); // "dark" — не изменилось
+
+
+// 2. Циклические ссылки
+const circular: any = { name: "circular" };
+circular.self = circular;
+circular.arr = [1, circular, 3];
+
+const circularCopy = deepClone(circular);
+console.log(circularCopy.self === circularCopy); // true (структура сохранена)
+console.log(circularCopy.arr[1] === circularCopy); // true
+
+
+// 3. Сохранение прототипа
+class Person {
+  constructor(public name: string) {}
+  greet() {
+    return `Hello, I'm ${this.name}`;
+  }
+}
+
+const person = new Person("Alice");
+const personCopy = deepClone(person);
+
+console.log(personCopy instanceof Person); // true
+console.log(personCopy.greet());           // "Hello, I'm Alice"
+console.log(personCopy.constructor === Person); // true
+
+
+// 4. Функции и символы
+const withFunctions = {
+  id: Symbol("user"),
+  sayHi: function() { return "Hi"; },
+  arrow: () => "arrow",
+  [Symbol("secret")]: "hidden"
+};
+
+const funcCopy = deepClone(withFunctions);
+console.log(typeof funcCopy.sayHi);        // "function"
+console.log(funcCopy.sayHi());             // "Hi"
+console.log(Object.getOwnPropertySymbols(funcCopy).length); // 2 (символы скопированы)
